@@ -1,0 +1,108 @@
+<!-- Header -->
+<header class="bg-[#6001D2] text-white px-4 py-3 flex items-center justify-between shadow-md shrink-0">
+  <div class="flex items-center gap-2 min-w-0">
+    <a href="/rooms" class="text-purple-100 hover:text-white flex items-center shrink-0">
+      <%- include("partials/icon", { icon: "arrow-left", iconClass: "w-5 h-5" }) %>
+    </a>
+    <div class="min-w-0">
+      <h1 class="text-base font-bold m-0 truncate"><%= room.name %></h1>
+      <a href="/rooms/<%= room.id %>/members" class="text-[11px] text-purple-200 hover:text-white m-0 underline decoration-purple-300/50"><%= room.members.length %> thành viên</a>
+    </div>
+  </div>
+  <div class="flex items-center gap-1.5 shrink-0">
+    <button
+      id="invite-btn"
+      data-code="<%= room.inviteCode %>"
+      class="flex items-center gap-1 text-xs text-purple-100 hover:text-white border border-purple-300/40 rounded-full px-2.5 py-1"
+    >
+      <%- include("partials/icon", { icon: "user-plus", iconClass: "w-3.5 h-3.5" }) %>
+      Mời
+    </button>
+
+    <% if (room.ownerId === currentUser.id) { %>
+      <form method="post" action="/rooms/<%= room.id %>/delete" class="m-0" onsubmit="return confirm('Xoá phòng này? Toàn bộ tin nhắn sẽ mất.')">
+        <button type="submit" class="flex items-center text-purple-100 hover:text-white p-1" title="Xoá phòng" aria-label="Xoá phòng">
+          <%- include("partials/icon", { icon: "trash", iconClass: "w-4 h-4" }) %>
+        </button>
+      </form>
+    <% } else { %>
+      <form method="post" action="/rooms/<%= room.id %>/leave" class="m-0" onsubmit="return confirm('Rời khỏi phòng này?')">
+        <button type="submit" class="flex items-center text-purple-100 hover:text-white p-1" title="Rời phòng" aria-label="Rời phòng">
+          <%- include("partials/icon", { icon: "log-out", iconClass: "w-4 h-4" }) %>
+        </button>
+      </form>
+    <% } %>
+  </div>
+</header>
+
+<!-- Tin nhắn -->
+<div
+  id="messages"
+  data-room="<%= room.id %>"
+  data-me="<%= currentUser.id %>"
+  data-last-date="<%= messages.length ? dateKey(messages[messages.length - 1].time) : '' %>"
+  class="flex-1 overflow-y-auto px-3 py-4 space-y-2 bg-gray-50"
+>
+  <% var prevUser = null, prevTime = null, prevDate = null; %>
+  <% messages.forEach(function (message) { %>
+    <% var curDate = dateKey(message.time); %>
+    <% if (curDate !== prevDate) { %>
+      <div class="flex justify-center my-2"><span class="text-[11px] text-gray-500 bg-gray-200 rounded-full px-3 py-0.5"><%= dateLabel(message.time) %></span></div>
+      <% prevUser = null; prevTime = null; prevDate = curDate; %>
+    <% } %>
+    <% var mine = message.userId === currentUser.id; %>
+    <% var time = new Date(message.time).toLocaleTimeString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh", hour: "2-digit", minute: "2-digit" }); %>
+    <% var showMeta = message.userId !== prevUser || time !== prevTime; %>
+    <div class="flex flex-col <%= mine ? 'items-end' : 'items-start' %>">
+      <% if (mine) { %>
+        <% if (showMeta) { %><span class="text-[11px] text-gray-400 mb-0.5 mr-1"><%= time %></span><% } %>
+        <div class="max-w-[78%] px-3.5 py-2 rounded-2xl rounded-br-md bg-[#6001D2] text-white text-sm wrap-break-word"><%= message.text %></div>
+      <% } else { %>
+        <% if (showMeta) { %><span class="text-[11px] text-gray-500 mb-0.5 ml-1"><%= message.user %> · <%= time %></span><% } %>
+        <div class="max-w-[78%] px-3.5 py-2 rounded-2xl rounded-bl-md bg-white border border-gray-200 text-gray-800 text-sm wrap-break-word"><%= message.text %></div>
+      <% } %>
+    </div>
+    <% prevUser = message.userId; prevTime = time; %>
+  <% }); %>
+</div>
+
+<!-- Ai đã xem (tới tin mới nhất) -->
+<%
+  var lastMsg = messages.length ? messages[messages.length - 1] : null;
+  var reads = room.members.map(function (m) {
+    return { userId: m.userId, username: m.user.username, lastReadId: m.lastReadMessageId || 0 };
+  });
+  var seenNames = [];
+  if (lastMsg) reads.forEach(function (r) {
+    if (r.userId !== lastMsg.userId && r.userId !== currentUser.id && r.lastReadId >= lastMsg.id) {
+      seenNames.push(r.username);
+    }
+  });
+%>
+<div
+  id="room-seen"
+  data-last-id="<%= lastMsg ? lastMsg.id : 0 %>"
+  data-last-sender="<%= lastMsg ? lastMsg.userId : 0 %>"
+  data-reads="<%= JSON.stringify(reads) %>"
+  class="px-4 pb-1 text-[11px] text-gray-400 text-right shrink-0"
+><%= seenNames.length ? "Đã xem: " + seenNames.join(", ") : "" %></div>
+
+<!-- Ô nhập -->
+<form id="form" class="flex items-center gap-2 p-3 border-t border-gray-200 bg-white shrink-0">
+  <input
+    id="input"
+    autocomplete="off"
+    placeholder="Nhắn cho cả phòng..."
+    class="flex-1 px-4 py-2.5 rounded-full border border-gray-300 text-sm outline-none focus:border-[#6001D2] focus:ring-1 focus:ring-[#6001D2]"
+  />
+  <button
+    type="submit"
+    class="shrink-0 w-10 h-10 rounded-full bg-[#6001D2] text-white flex items-center justify-center hover:bg-[#4d01a8]"
+    aria-label="Gửi"
+  >
+    <%- include("partials/icon", { icon: "send", iconClass: "w-5 h-5" }) %>
+  </button>
+</form>
+
+<script src="/chat-utils.js"></script>
+<script src="/room-client.js"></script>

@@ -1,0 +1,49 @@
+<% const isOwner = room.ownerId === currentUser.id; %>
+
+<!-- Header -->
+<header class="bg-[#6001D2] text-white px-4 py-3 flex items-center gap-2 shadow-md shrink-0">
+  <a href="/rooms/<%= room.id %>" class="text-purple-100 hover:text-white flex items-center">
+    <%- include("partials/icon", { icon: "arrow-left", iconClass: "w-5 h-5" }) %>
+  </a>
+  <h1 class="text-base font-bold m-0 truncate">Thành viên</h1>
+</header>
+
+<div class="flex-1 overflow-y-auto bg-gray-50">
+  <!-- Đổi tên (chỉ chủ phòng) -->
+  <% if (isOwner) { %>
+    <section class="p-3 border-b border-gray-200 bg-white">
+      <h2 class="text-xs font-bold text-gray-500 uppercase mb-2">Đổi tên phòng</h2>
+      <form method="post" action="/rooms/<%= room.id %>/rename" class="flex items-center gap-2">
+        <input
+          name="name"
+          value="<%= room.name %>"
+          autocomplete="off"
+          class="flex-1 px-4 py-2.5 rounded-lg border border-gray-300 text-sm outline-none focus:border-[#6001D2] focus:ring-1 focus:ring-[#6001D2]"
+        />
+        <button type="submit" class="shrink-0 px-3 py-2.5 rounded-lg bg-[#6001D2] text-white text-sm font-semibold hover:bg-[#4d01a8]">Lưu</button>
+      </form>
+    </section>
+  <% } %>
+
+  <!-- Danh sách thành viên -->
+  <section class="p-3">
+    <h2 class="text-xs font-bold text-gray-500 uppercase mb-2">Thành viên (<%= room.members.length %>)</h2>
+    <% room.members.forEach(function (member) { %>
+      <div class="flex items-center justify-between bg-white border border-gray-200 rounded-xl px-3 py-2 mb-2">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-full bg-[#6001D2] text-white flex items-center justify-center text-sm font-semibold uppercase"><%= member.user.username.charAt(0) %></div>
+          <span class="text-sm font-medium"><%= member.user.username %></span>
+          <% if (member.userId === room.ownerId) { %>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-[#6001D2] font-semibold">Chủ phòng</span>
+          <% } %>
+        </div>
+        <% if (isOwner && member.userId !== room.ownerId) { %>
+          <form method="post" action="/rooms/<%= room.id %>/kick" class="m-0" onsubmit="return confirm('Đuổi <%= member.user.username %> khỏi phòng?')">
+            <input type="hidden" name="userId" value="<%= member.userId %>" />
+            <button type="submit" class="text-xs px-3 py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100">Đuổi</button>
+          </form>
+        <% } %>
+      </div>
+    <% }); %>
+  </section>
+</div>

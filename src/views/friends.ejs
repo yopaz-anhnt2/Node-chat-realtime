@@ -1,0 +1,101 @@
+<!-- Header -->
+<header class="bg-[#6001D2] text-white px-4 py-3 flex items-center justify-between shadow-md shrink-0">
+  <div class="flex items-center gap-2">
+    <a href="/" class="text-purple-100 hover:text-white flex items-center">
+      <%- include("partials/icon", { icon: "arrow-left", iconClass: "w-5 h-5" }) %>
+    </a>
+    <h1 class="text-base font-bold m-0">Bạn bè</h1>
+  </div>
+  <span class="text-sm text-purple-200 flex items-center gap-1">
+    <%- include("partials/icon", { icon: "user", iconClass: "w-4 h-4" }) %>
+    <%= currentUser.username %>
+  </span>
+</header>
+
+<div class="flex-1 overflow-y-auto bg-gray-50">
+  <!-- Lời mời đến -->
+  <% if (incoming.length) { %>
+    <section class="p-3">
+      <h2 class="text-xs font-bold text-gray-500 uppercase mb-2">Lời mời kết bạn (<%= incoming.length %>)</h2>
+      <% incoming.forEach(function (person) { %>
+        <div class="flex items-center justify-between bg-white border border-gray-200 rounded-xl px-3 py-2 mb-2">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-full bg-[#6001D2] text-white flex items-center justify-center text-sm font-semibold uppercase"><%= person.username.charAt(0) %></div>
+            <span class="text-sm font-medium"><%= person.username %></span>
+          </div>
+          <div class="flex gap-1">
+            <form method="post" action="/friends/accept">
+              <input type="hidden" name="userId" value="<%= person.id %>" />
+              <button class="text-xs px-3 py-1.5 rounded-lg bg-[#6001D2] text-white hover:bg-[#4d01a8]">Chấp nhận</button>
+            </form>
+            <form method="post" action="/friends/reject">
+              <input type="hidden" name="userId" value="<%= person.id %>" />
+              <button class="text-xs px-3 py-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200">Từ chối</button>
+            </form>
+          </div>
+        </div>
+      <% }); %>
+    </section>
+  <% } %>
+
+  <!-- Bạn bè -->
+  <section class="p-3">
+    <h2 class="text-xs font-bold text-gray-500 uppercase mb-2">Bạn bè (<%= friends.length %>)</h2>
+    <% if (!friends.length) { %>
+      <p class="text-sm text-gray-400">Chưa có bạn nào. Kết bạn ở mục gợi ý bên dưới nhé.</p>
+    <% } %>
+    <% friends.forEach(function (person) { %>
+      <a href="/chat/<%= person.id %>" class="flex items-center justify-between bg-white border border-gray-200 rounded-xl px-3 py-2 mb-2 hover:border-[#6001D2]">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-semibold uppercase"><%= person.username.charAt(0) %></div>
+          <span class="text-sm font-medium"><%= person.username %></span>
+        </div>
+        <span class="flex items-center gap-1 text-xs text-[#6001D2] font-medium">
+          <%- include("partials/icon", { icon: "message-circle", iconClass: "w-4 h-4" }) %>
+          Nhắn tin
+        </span>
+      </a>
+    <% }); %>
+  </section>
+
+  <!-- Lời mời đã gửi -->
+  <% if (outgoing.length) { %>
+    <section class="p-3">
+      <h2 class="text-xs font-bold text-gray-500 uppercase mb-2">Đang chờ duyệt (<%= outgoing.length %>)</h2>
+      <% outgoing.forEach(function (person) { %>
+        <div class="flex items-center justify-between bg-white border border-gray-200 rounded-xl px-3 py-2 mb-2">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-full bg-gray-300 text-white flex items-center justify-center text-sm font-semibold uppercase"><%= person.username.charAt(0) %></div>
+            <span class="text-sm font-medium text-gray-600"><%= person.username %></span>
+          </div>
+          <form method="post" action="/friends/cancel">
+            <input type="hidden" name="userId" value="<%= person.id %>" />
+            <button class="text-xs px-3 py-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200">Huỷ</button>
+          </form>
+        </div>
+      <% }); %>
+    </section>
+  <% } %>
+
+  <!-- Gợi ý kết bạn -->
+  <section class="p-3">
+    <h2 class="text-xs font-bold text-gray-500 uppercase mb-2">Gợi ý kết bạn</h2>
+    <% if (!discoverable.length) { %>
+      <p class="text-sm text-gray-400">Không còn ai để kết bạn.</p>
+    <% } %>
+    <% discoverable.forEach(function (person) { %>
+      <div class="flex items-center justify-between bg-white border border-gray-200 rounded-xl px-3 py-2 mb-2">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-full bg-gray-400 text-white flex items-center justify-center text-sm font-semibold uppercase"><%= person.username.charAt(0) %></div>
+          <span class="text-sm font-medium"><%= person.username %></span>
+        </div>
+        <form method="post" action="/friends/request">
+          <input type="hidden" name="userId" value="<%= person.id %>" />
+          <button class="text-xs px-3 py-1.5 rounded-lg bg-[#6001D2] text-white hover:bg-[#4d01a8]">Kết bạn</button>
+        </form>
+      </div>
+    <% }); %>
+  </section>
+</div>
+
+<%# Thông báo realtime do notifications.js (trong layout) lo, chạy ở mọi trang %>

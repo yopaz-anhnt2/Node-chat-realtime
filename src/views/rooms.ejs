@@ -1,0 +1,44 @@
+<!-- Header -->
+<header class="bg-[#6001D2] text-white px-4 py-3 flex items-center gap-2 shadow-md shrink-0">
+  <a href="/" class="text-purple-100 hover:text-white flex items-center">
+    <%- include("partials/icon", { icon: "arrow-left", iconClass: "w-5 h-5" }) %>
+  </a>
+  <h1 class="text-base font-bold m-0">Phòng nhóm</h1>
+</header>
+
+<div class="flex-1 overflow-y-auto bg-gray-50">
+  <!-- Tạo phòng -->
+  <section class="p-3 border-b border-gray-200 bg-white">
+    <form method="post" action="/rooms" class="flex items-center gap-2">
+      <input
+        name="name"
+        autocomplete="off"
+        placeholder="Tên phòng mới..."
+        class="flex-1 px-4 py-2.5 rounded-lg border border-gray-300 text-sm outline-none focus:border-[#6001D2] focus:ring-1 focus:ring-[#6001D2]"
+      />
+      <button
+        type="submit"
+        class="shrink-0 flex items-center gap-1 px-3 py-2.5 rounded-lg bg-[#6001D2] text-white text-sm font-semibold hover:bg-[#4d01a8]"
+      >
+        <%- include("partials/icon", { icon: "plus", iconClass: "w-4 h-4" }) %>
+        Tạo
+      </button>
+    </form>
+  </section>
+
+  <!-- Danh sách phòng -->
+  <section class="p-3">
+    <h2 class="text-xs font-bold text-gray-500 uppercase mb-2">Phòng của tôi (<%= rooms.length %>)</h2>
+    <% if (!rooms.length) { %>
+      <p class="text-sm text-gray-400">Chưa có phòng nào. Tạo phòng mới ở trên, rồi gửi link mời cho bạn bè.</p>
+    <% } %>
+    <% rooms.forEach(function (room) { %>
+      <a href="/rooms/<%= room.id %>" class="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-3 py-2.5 mb-2 hover:border-[#6001D2]">
+        <div class="w-9 h-9 rounded-lg bg-[#6001D2] text-white flex items-center justify-center">
+          <%- include("partials/icon", { icon: "users", iconClass: "w-4 h-4" }) %>
+        </div>
+        <span class="text-sm font-medium"><%= room.name %></span>
+      </a>
+    <% }); %>
+  </section>
+</div>

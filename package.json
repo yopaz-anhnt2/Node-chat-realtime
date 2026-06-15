@@ -1,0 +1,36 @@
+{
+  "name": "node-chat-realtime",
+  "version": "1.0.0",
+  "description": "Ứng dụng chat realtime đơn giản với Express và Socket.IO",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "concurrently -n server,css -c blue,magenta \"npm:dev:server\" \"npm:watch:css\"",
+    "dev:server": "node --watch server.js",
+    "build:css": "tailwindcss -i ./src/input.css -o ./public/style.css --minify",
+    "watch:css": "tailwindcss -i ./src/input.css -o ./public/style.css --watch",
+    "db:migrate": "sequelize-cli db:migrate",
+    "db:migrate:undo": "sequelize-cli db:migrate:undo",
+    "db:seed": "sequelize-cli db:seed:all",
+    "db:seed:undo": "sequelize-cli db:seed:undo:all"
+  },
+  "dependencies": {
+    "@tailwindcss/cli": "^4.3.0",
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^17.4.2",
+    "ejs": "^6.0.1",
+    "express": "^4.19.2",
+    "express-ejs-layouts": "^2.5.1",
+    "express-session": "^1.19.0",
+    "express-validator": "^7.3.2",
+    "mysql2": "^3.22.5",
+    "sequelize": "^6.37.8",
+    "socket.io": "^4.7.5",
+    "tailwindcss": "^4.3.0"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.3",
+    "sequelize-cli": "^6.6.5"
+  }
+}

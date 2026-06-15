@@ -1,0 +1,48 @@
+<div class="flex-1 flex flex-col items-center justify-center px-6">
+  <div class="w-full max-w-xs">
+    <div class="text-center mb-6">
+      <p class="text-5xl font-extrabold text-[#6001D2] m-0 tracking-tight">Yahoo!</p>
+      <p class="text-gray-500 text-sm mt-2">Tạo tài khoản mới</p>
+    </div>
+
+    <form method="post" action="/register" class="flex flex-col gap-3">
+      <% if (errors && errors.length) { %>
+        <ul class="text-sm text-red-600 bg-red-50 border border-red-200 px-3 py-2 rounded-lg m-0 list-disc list-inside">
+          <% errors.forEach(function (message) { %>
+            <li><%= message %></li>
+          <% }); %>
+        </ul>
+      <% } %>
+
+      <input
+        name="username"
+        value="<%= old.username || '' %>"
+        placeholder="Tên đăng nhập"
+        class="px-4 py-2.5 rounded-lg border border-gray-300 text-sm outline-none focus:border-[#6001D2] focus:ring-1 focus:ring-[#6001D2]"
+      />
+      <input
+        name="password"
+        type="password"
+        placeholder="Mật khẩu (tối thiểu 6 ký tự)"
+        class="px-4 py-2.5 rounded-lg border border-gray-300 text-sm outline-none focus:border-[#6001D2] focus:ring-1 focus:ring-[#6001D2]"
+      />
+      <input
+        name="confirm"
+        type="password"
+        placeholder="Nhập lại mật khẩu"
+        class="px-4 py-2.5 rounded-lg border border-gray-300 text-sm outline-none focus:border-[#6001D2] focus:ring-1 focus:ring-[#6001D2]"
+      />
+      <button
+        type="submit"
+        class="py-2.5 rounded-lg bg-[#6001D2] text-white font-semibold text-sm hover:bg-[#4d01a8]"
+      >
+        Đăng ký
+      </button>
+    </form>
+
+    <p class="text-sm text-center text-gray-500 mt-5">
+      Đã có tài khoản?
+      <a href="/login" class="text-[#6001D2] font-medium hover:underline">Đăng nhập</a>
+    </p>
+  </div>
+</div>

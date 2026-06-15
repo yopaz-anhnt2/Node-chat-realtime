@@ -1,0 +1,5 @@
+@import "tailwindcss";
+
+/* Quét các file view/JS để biết class nào đang dùng */
+@source "./views/**/*.ejs";
+@source "../public/client.js";

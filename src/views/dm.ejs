@@ -1,0 +1,68 @@
+<!-- Header -->
+<header class="bg-[#6001D2] text-white px-4 py-3 flex items-center gap-2 shadow-md shrink-0">
+  <a href="/friends" class="text-purple-100 hover:text-white flex items-center">
+    <%- include("partials/icon", { icon: "arrow-left", iconClass: "w-5 h-5" }) %>
+  </a>
+  <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-sm font-semibold uppercase">
+    <%= friend.username.charAt(0) %>
+  </div>
+  <h1 class="text-base font-bold m-0"><%= friend.username %></h1>
+</header>
+
+<!-- Tin nhắn -->
+<div
+  id="messages"
+  data-me="<%= currentUser.id %>"
+  data-friend="<%= friend.id %>"
+  data-last-date="<%= messages.length ? dateKey(messages[messages.length - 1].time) : '' %>"
+  class="flex-1 overflow-y-auto px-3 py-4 space-y-2 bg-gray-50"
+>
+  <% var prevSender = null, prevTime = null, prevDate = null; %>
+  <% messages.forEach(function (message) { %>
+    <% var curDate = dateKey(message.time); %>
+    <% if (curDate !== prevDate) { %>
+      <div class="flex justify-center my-2"><span class="text-[11px] text-gray-500 bg-gray-200 rounded-full px-3 py-0.5"><%= dateLabel(message.time) %></span></div>
+      <% prevSender = null; prevTime = null; prevDate = curDate; %>
+    <% } %>
+    <% var mine = message.senderId === currentUser.id; %>
+    <% var time = new Date(message.time).toLocaleTimeString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh", hour: "2-digit", minute: "2-digit" }); %>
+    <% var showMeta = message.senderId !== prevSender || time !== prevTime; %>
+    <div class="flex flex-col <%= mine ? 'items-end' : 'items-start' %>">
+      <% if (showMeta) { %><span class="text-[11px] text-gray-400 mb-0.5 <%= mine ? 'mr-1' : 'ml-1' %>"><%= time %></span><% } %>
+      <div class="max-w-[78%] px-3.5 py-2 rounded-2xl <%= mine ? 'rounded-br-md bg-[#6001D2] text-white' : 'rounded-bl-md bg-white border border-gray-200 text-gray-800' %> text-sm wrap-break-word">
+        <%= message.text %>
+      </div>
+    </div>
+    <% prevSender = message.senderId; prevTime = time; %>
+  <% }); %>
+</div>
+
+<!-- Trạng thái tin cuối của mình: Đã gửi / Đã nhận / Đã xem -->
+<%
+  var lastMsg = messages.length ? messages[messages.length - 1] : null;
+  var dmStatus = "";
+  if (lastMsg && lastMsg.senderId === currentUser.id) {
+    dmStatus = lastMsg.seenAt ? "Đã xem" : (lastMsg.deliveredAt ? "Đã nhận" : "Đã gửi");
+  }
+%>
+<div id="dm-status" class="px-4 pb-1 text-[11px] text-gray-400 text-right shrink-0"><%= dmStatus %></div>
+
+<!-- Ô nhập -->
+<form id="form" class="flex items-center gap-2 p-3 border-t border-gray-200 bg-white shrink-0">
+  <input
+    id="input"
+    autocomplete="off"
+    placeholder="Nhắn cho <%= friend.username %>..."
+    class="flex-1 px-4 py-2.5 rounded-full border border-gray-300 text-sm outline-none focus:border-[#6001D2] focus:ring-1 focus:ring-[#6001D2]"
+  />
+  <button
+    type="submit"
+    class="shrink-0 w-10 h-10 rounded-full bg-[#6001D2] text-white flex items-center justify-center hover:bg-[#4d01a8]"
+    aria-label="Gửi"
+  >
+    <%- include("partials/icon", { icon: "send", iconClass: "w-5 h-5" }) %>
+  </button>
+</form>
+
+<script src="/chat-utils.js"></script>
+<script src="/dm-client.js"></script>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body class="m-0 h-screen flex justify-center bg-gray-100 font-sans text-gray-900">
+    <%- include("partials/flash") %>
+
+    <% if (currentUser) { %>
+      <!-- Socket + thông báo dùng chung CHO MỌI TRANG (đặt trước nội dung để các trang tái dùng window.appSocket) -->
+      <script>
+        window.currentUserId = <%= currentUser.id %>;
+      </script>
+      <script src="/socket.io/socket.io.js"></script>
+      <script src="/notifications.js"></script>
+    <% } %>
+
+    <!-- Khung rộng cỡ mobile, căn giữa; PC thì 2 bên là khoảng trống -->
+    <div class="w-full max-w-md h-screen bg-white shadow-xl flex flex-col overflow-hidden">
+      <%- body %>
+    </div>
+  </body>
+</html>

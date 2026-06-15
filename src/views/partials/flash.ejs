@@ -1,0 +1,11 @@
+<% if (typeof flash !== "undefined" && flash) { %>
+  <div
+    data-flash
+    class="fixed top-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-lg text-sm text-white shadow-lg <%= flash.type === 'success' ? 'bg-green-600' : 'bg-red-600' %>"
+  >
+    <%= flash.message %>
+  </div>
+  <script>
+    setTimeout(() => document.querySelector("[data-flash]")?.remove(), 3000);
+  </script>
+<% } %>

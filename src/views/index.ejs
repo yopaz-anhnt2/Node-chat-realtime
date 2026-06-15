@@ -1,0 +1,93 @@
+<!-- Header tím Yahoo -->
+<header class="bg-[#6001D2] text-white px-4 py-3 flex items-center justify-between shadow-md shrink-0">
+  <div>
+    <h1 class="text-base font-bold leading-tight m-0">Yahoo! Chat</h1>
+    <p class="text-[11px] text-purple-200 m-0 flex items-center gap-1">
+      <span class="w-2 h-2 rounded-full bg-green-400 inline-block"></span>
+      <span id="online">0</span> online
+    </p>
+  </div>
+  <div class="flex items-center gap-2">
+    <a href="/rooms" class="flex items-center text-purple-100 hover:text-white border border-purple-300/40 rounded-full p-1.5" title="Phòng nhóm">
+      <%- include("partials/icon", { icon: "message-square", iconClass: "w-4 h-4" }) %>
+    </a>
+    <a href="/friends" class="relative flex items-center gap-1 text-xs text-purple-100 hover:text-white border border-purple-300/40 rounded-full px-2.5 py-1">
+      <%- include("partials/icon", { icon: "users", iconClass: "w-3.5 h-3.5" }) %>
+      Bạn bè
+      <span
+        id="friend-badge"
+        class="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center <%= pendingCount ? '' : 'hidden' %>"
+      ><%= pendingCount %></span>
+    </a>
+    <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-sm font-semibold uppercase">
+      <%= currentUser.username.charAt(0) %>
+    </div>
+    <form method="post" action="/logout" class="m-0">
+      <button
+        type="submit"
+        class="text-purple-100 hover:text-white bg-transparent border-none cursor-pointer flex items-center"
+        aria-label="Đăng xuất"
+        title="Đăng xuất"
+      >
+        <%- include("partials/icon", { icon: "log-out", iconClass: "w-5 h-5" }) %>
+      </button>
+    </form>
+  </div>
+</header>
+
+<!-- Danh sách tin nhắn -->
+<div
+  id="messages"
+  data-username="<%= currentUser.username %>"
+  data-last-date="<%= messages.length ? dateKey(messages[messages.length - 1].time) : '' %>"
+  class="flex-1 overflow-y-auto px-3 py-4 space-y-2 bg-gray-50"
+>
+  <% var prevUser = null, prevTime = null, prevDate = null; %>
+  <% messages.forEach(function (message) { %>
+    <% var curDate = dateKey(message.time); %>
+    <% if (curDate !== prevDate) { %>
+      <div class="flex justify-center my-2"><span class="text-[11px] text-gray-500 bg-gray-200 rounded-full px-3 py-0.5"><%= dateLabel(message.time) %></span></div>
+      <% prevUser = null; prevTime = null; prevDate = curDate; %>
+    <% } %>
+    <% var mine = message.user === currentUser.username; %>
+    <% var time = new Date(message.time).toLocaleTimeString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh", hour: "2-digit", minute: "2-digit" }); %>
+    <% var showMeta = message.user !== prevUser || time !== prevTime; %>
+    <div class="flex flex-col <%= mine ? 'items-end' : 'items-start' %>">
+      <% if (mine) { %>
+        <% if (showMeta) { %><span class="text-[11px] text-gray-400 mb-0.5 mr-1"><%= time %></span><% } %>
+        <div class="max-w-[78%] px-3.5 py-2 rounded-2xl rounded-br-md bg-[#6001D2] text-white text-sm wrap-break-word">
+          <%= message.text %>
+        </div>
+      <% } else { %>
+        <% if (showMeta) { %><span class="text-[11px] text-gray-500 mb-0.5 ml-1"><%= message.user %> · <%= time %></span><% } %>
+        <div class="max-w-[78%] px-3.5 py-2 rounded-2xl rounded-bl-md bg-white border border-gray-200 text-gray-800 text-sm wrap-break-word">
+          <%= message.text %>
+        </div>
+      <% } %>
+      <% prevUser = message.user; prevTime = time; %>
+    </div>
+  <% }); %>
+</div>
+
+<!-- Đang gõ -->
+<div id="typing" class="px-4 h-5 text-xs text-gray-500 italic shrink-0"></div>
+
+<!-- Ô nhập -->
+<form id="form" class="flex items-center gap-2 p-3 border-t border-gray-200 bg-white shrink-0">
+  <input
+    id="input"
+    autocomplete="off"
+    placeholder="Nhập tin nhắn..."
+    class="flex-1 px-4 py-2.5 rounded-full border border-gray-300 text-sm outline-none focus:border-[#6001D2] focus:ring-1 focus:ring-[#6001D2]"
+  />
+  <button
+    type="submit"
+    class="shrink-0 w-10 h-10 rounded-full bg-[#6001D2] text-white flex items-center justify-center hover:bg-[#4d01a8]"
+    aria-label="Gửi"
+  >
+    <%- include("partials/icon", { icon: "send", iconClass: "w-5 h-5" }) %>
+  </button>
+</form>
+
+<script src="/chat-utils.js"></script>
+<script src="/client.js"></script>
