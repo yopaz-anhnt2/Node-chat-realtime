@@ -10,6 +10,9 @@ const currentUser = messages.dataset.username;
 // Cuộn xuống cuối khi mở trang (lịch sử do EJS render sẵn)
 messages.scrollTop = messages.scrollHeight;
 
+// Ô nhập: Enter gửi, Shift+Enter xuống dòng, tự giãn cao
+setupChatTextarea(input, form);
+
 // Gửi tin nhắn
 form.addEventListener("submit", (event) => {
   event.preventDefault();
@@ -18,7 +21,7 @@ form.addEventListener("submit", (event) => {
   socket.emit("chat", text);
   socket.emit("stop-typing"); // gửi xong thì hết gõ
   clearTimeout(typingTimer);
-  input.value = "";
+  resetChatTextarea(input);
 });
 
 // Báo "đang gõ" khi nhập, tự tắt sau 1.5s ngừng gõ
@@ -61,12 +64,12 @@ socket.on("chat", ({ user, text, time }) => {
     const meta = showMeta
       ? `<span class="text-[11px] text-gray-400 mb-0.5 mr-1">${formattedTime}</span>`
       : "";
-    wrapper.innerHTML = `${meta}<div class="max-w-[78%] px-3.5 py-2 rounded-2xl rounded-br-md bg-[#6001D2] text-white text-sm wrap-break-word">${escapeHtml(text)}</div>`;
+    wrapper.innerHTML = `${meta}<div class="max-w-[78%] px-3.5 py-2 rounded-2xl rounded-br-md bg-[#6001D2] text-white text-sm whitespace-pre-wrap wrap-break-word">${escapeHtml(text)}</div>`;
   } else {
     const meta = showMeta
       ? `<span class="text-[11px] text-gray-500 mb-0.5 ml-1">${escapeHtml(user)} · ${formattedTime}</span>`
       : "";
-    wrapper.innerHTML = `${meta}<div class="max-w-[78%] px-3.5 py-2 rounded-2xl rounded-bl-md bg-white border border-gray-200 text-gray-800 text-sm wrap-break-word">${escapeHtml(text)}</div>`;
+    wrapper.innerHTML = `${meta}<div class="max-w-[78%] px-3.5 py-2 rounded-2xl rounded-bl-md bg-white border border-gray-200 text-gray-800 text-sm whitespace-pre-wrap wrap-break-word">${escapeHtml(text)}</div>`;
   }
 
   messages.appendChild(wrapper);

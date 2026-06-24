@@ -10,6 +10,9 @@ const friendId = Number(messages.dataset.friend);
 // Cuộn xuống cuối khi mở trang
 messages.scrollTop = messages.scrollHeight;
 
+// Ô nhập: Enter gửi, Shift+Enter xuống dòng, tự giãn cao
+setupChatTextarea(input, form);
+
 // Đang mở hội thoại -> báo ĐÃ XEM các tin của bạn
 socket.emit("dm-seen", { otherId: friendId });
 
@@ -23,7 +26,7 @@ form.addEventListener("submit", (event) => {
   const text = input.value.trim();
   if (!text) return;
   socket.emit("dm", { toUserId: friendId, text });
-  input.value = "";
+  resetChatTextarea(input);
 });
 
 // Nhận tin riêng realtime
@@ -67,7 +70,7 @@ socket.on("dm", (message) => {
   const meta = showMeta
     ? `<span class="text-[11px] text-gray-400 mb-0.5 ${align}">${formattedTime}</span>`
     : "";
-  wrapper.innerHTML = `${meta}<div class="max-w-[78%] px-3.5 py-2 rounded-2xl ${bubble} text-sm wrap-break-word">${escapeHtml(message.text)}</div>`;
+  wrapper.innerHTML = `${meta}<div class="max-w-[78%] px-3.5 py-2 rounded-2xl ${bubble} text-sm whitespace-pre-wrap wrap-break-word">${escapeHtml(message.text)}</div>`;
 
   messages.appendChild(wrapper);
   messages.scrollTop = messages.scrollHeight;

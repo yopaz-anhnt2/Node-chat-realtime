@@ -56,10 +56,10 @@
     <div class="flex flex-col <%= mine ? 'items-end' : 'items-start' %>">
       <% if (mine) { %>
         <% if (showMeta) { %><span class="text-[11px] text-gray-400 mb-0.5 mr-1"><%= time %></span><% } %>
-        <div class="max-w-[78%] px-3.5 py-2 rounded-2xl rounded-br-md bg-[#6001D2] text-white text-sm wrap-break-word"><%= message.text %></div>
+        <div class="max-w-[78%] px-3.5 py-2 rounded-2xl rounded-br-md bg-[#6001D2] text-white text-sm whitespace-pre-wrap wrap-break-word"><%= message.text %></div>
       <% } else { %>
         <% if (showMeta) { %><span class="text-[11px] text-gray-500 mb-0.5 ml-1"><%= message.user %> · <%= time %></span><% } %>
-        <div class="max-w-[78%] px-3.5 py-2 rounded-2xl rounded-bl-md bg-white border border-gray-200 text-gray-800 text-sm wrap-break-word"><%= message.text %></div>
+        <div class="max-w-[78%] px-3.5 py-2 rounded-2xl rounded-bl-md bg-white border border-gray-200 text-gray-800 text-sm whitespace-pre-wrap wrap-break-word"><%= message.text %></div>
       <% } %>
     </div>
     <% prevUser = message.userId; prevTime = time; %>
@@ -88,13 +88,14 @@
 ><%= seenNames.length ? "Đã xem: " + seenNames.join(", ") : "" %></div>
 
 <!-- Ô nhập -->
-<form id="form" class="flex items-center gap-2 p-3 border-t border-gray-200 bg-white shrink-0">
-  <input
+<form id="form" class="flex items-end gap-2 p-3 border-t border-gray-200 bg-white shrink-0">
+  <textarea
     id="input"
+    rows="1"
     autocomplete="off"
     placeholder="Nhắn cho cả phòng..."
-    class="flex-1 px-4 py-2.5 rounded-full border border-gray-300 text-sm outline-none focus:border-[#6001D2] focus:ring-1 focus:ring-[#6001D2]"
-  />
+    class="flex-1 resize-none max-h-[120px] overflow-y-auto px-4 py-2.5 rounded-2xl border border-gray-300 text-sm outline-none focus:border-[#6001D2] focus:ring-1 focus:ring-[#6001D2]"
+  ></textarea>
   <button
     type="submit"
     class="shrink-0 w-10 h-10 rounded-full bg-[#6001D2] text-white flex items-center justify-center hover:bg-[#4d01a8]"

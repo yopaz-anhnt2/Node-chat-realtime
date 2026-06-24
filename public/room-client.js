@@ -11,6 +11,9 @@ const meId = Number(messages.dataset.me);
 socket.emit("join-room", roomId);
 messages.scrollTop = messages.scrollHeight;
 
+// Ô nhập: Enter gửi, Shift+Enter xuống dòng, tự giãn cao
+setupChatTextarea(input, form);
+
 // ----- Ai đã xem -----
 const roomSeen = document.getElementById("room-seen");
 let lastMessageId = Number(roomSeen.dataset.lastId) || 0;
@@ -45,7 +48,7 @@ form.addEventListener("submit", (event) => {
   const text = input.value.trim();
   if (!text) return;
   socket.emit("room-message", { roomId, text });
-  input.value = "";
+  resetChatTextarea(input);
 });
 
 // Nhận tin realtime của phòng
@@ -80,12 +83,12 @@ socket.on("room-message", ({ id, userId, user, text, time }) => {
     const meta = showMeta
       ? `<span class="text-[11px] text-gray-400 mb-0.5 mr-1">${formattedTime}</span>`
       : "";
-    wrapper.innerHTML = `${meta}<div class="max-w-[78%] px-3.5 py-2 rounded-2xl rounded-br-md bg-[#6001D2] text-white text-sm wrap-break-word">${escapeHtml(text)}</div>`;
+    wrapper.innerHTML = `${meta}<div class="max-w-[78%] px-3.5 py-2 rounded-2xl rounded-br-md bg-[#6001D2] text-white text-sm whitespace-pre-wrap wrap-break-word">${escapeHtml(text)}</div>`;
   } else {
     const meta = showMeta
       ? `<span class="text-[11px] text-gray-500 mb-0.5 ml-1">${escapeHtml(user)} · ${formattedTime}</span>`
       : "";
-    wrapper.innerHTML = `${meta}<div class="max-w-[78%] px-3.5 py-2 rounded-2xl rounded-bl-md bg-white border border-gray-200 text-gray-800 text-sm wrap-break-word">${escapeHtml(text)}</div>`;
+    wrapper.innerHTML = `${meta}<div class="max-w-[78%] px-3.5 py-2 rounded-2xl rounded-bl-md bg-white border border-gray-200 text-gray-800 text-sm whitespace-pre-wrap wrap-break-word">${escapeHtml(text)}</div>`;
   }
 
   messages.appendChild(wrapper);

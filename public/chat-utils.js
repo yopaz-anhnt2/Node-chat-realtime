@@ -27,3 +27,24 @@ function appendDateHeader(container, time) {
   wrap.innerHTML = `<span class="text-[11px] text-gray-500 bg-gray-200 rounded-full px-3 py-0.5">${chatDateLabel(time)}</span>`;
   container.appendChild(wrap);
 }
+
+// Ô nhập textarea: Enter để gửi, Shift+Enter xuống dòng, tự giãn cao (tối đa 120px)
+function setupChatTextarea(textarea, form) {
+  function autoGrow() {
+    textarea.style.height = "auto";
+    textarea.style.height = Math.min(textarea.scrollHeight, 120) + "px";
+  }
+  textarea.addEventListener("input", autoGrow);
+  textarea.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault(); // không xuống dòng -> gửi luôn
+      form.requestSubmit();
+    }
+  });
+}
+
+// Xoá nội dung + thu nhỏ lại 1 dòng sau khi gửi
+function resetChatTextarea(textarea) {
+  textarea.value = "";
+  textarea.style.height = "auto";
+}
